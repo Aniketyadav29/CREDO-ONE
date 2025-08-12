@@ -10,7 +10,7 @@ def create_dummy_data(file_path='loan_data.csv'):
     if not os.path.exists(file_path):
         print(f"Creating a dummy dataset at '{file_path}' for demonstration.")
         data = pd.DataFrame({
-            'person_age': [21, 23, 25, 30, 28, 35, 45, 22, 29, 31],
+            'person_age': [69, 23, 25, 30, 28, 35, 45, 22, 29, 31],
             'person_income': [9600, 45000, 20000, 70000, 55000, 80000, 95000, 30000, 60000, 72000],
             'person_emp_length': [5, 2, 8, 10, 4, 15, 20, 1, 6, 9],
             'loan_amnt': [1000, 5000, 2000, 10000, 8000, 15000, 20000, 2500, 7500, 12000],
@@ -34,4 +34,5 @@ def load_data(file_path):
         return data
     except FileNotFoundError:
         print(f"Error: The file '{file_path}' was not found.")
+
         return None
