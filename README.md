@@ -1,4 +1,6 @@
 # Welcome to GitHub Desktop!
-this is my first repository.
+This is my first repository.
 <br>
 author- Aniket Yadav 
+<br>
+Its my minor project <h2>"AI Driven Microfinance Loan Risk Prediction"</h2>
