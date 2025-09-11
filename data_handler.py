@@ -26,7 +26,6 @@ def create_dummy_data(file_path):
                         1, 0, 1, 0, 0, 1, 0, 0, 1, 0]
     })
     data.to_excel(file_path, index=False)
-
 def load_data(file_path):
     """
     Loads data from an Excel file at the specified path.
@@ -39,4 +38,5 @@ def load_data(file_path):
     except FileNotFoundError:
         print(f"Error: The file '{file_path}' was not found.")
         return None
+
 
