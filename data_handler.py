@@ -1,6 +1,5 @@
 import pandas as pd
 import os
-
 def create_dummy_data(file_path):
     """
     Creates a dummy Excel file at the specified path.
@@ -40,3 +39,4 @@ def load_data(file_path):
     except FileNotFoundError:
         print(f"Error: The file '{file_path}' was not found.")
         return None
+
