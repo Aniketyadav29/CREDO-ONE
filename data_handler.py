@@ -1,42 +1,60 @@
 import pandas as pd
+import numpy as np
 import os
+
 def create_dummy_data(file_path):
     """
-    Creates a dummy Excel file at the specified path.
+    Creates a robust dummy Excel file with 100 entries to provide 
+    a more realistic training and evaluation environment.
     """
-    print(f"Creating a dummy dataset at '{file_path}' for demonstration.")
+    print(f"Creating an updated dummy dataset at '{file_path}' for demonstration.")
+    
+    # Set seed for reproducibility
+    np.random.seed(42)
+    rows = 100
+
+    # Generate diverse features
     data = pd.DataFrame({
-        'person_age': [21, 23, 25, 30, 28, 35, 45, 22, 29, 31,
-                       24, 32, 26, 38, 40, 27, 33, 42, 29, 34],
-        'person_income': [9600, 45000, 20000, 70000, 55000, 80000, 95000, 30000, 60000, 72000,
-                          35000, 65000, 42000, 85000, 100000, 50000, 75000, 92000, 58000, 78000],
-        'person_emp_length': [5, 2, 8, 10, 4, 15, 20, 1, 6, 9,
-                              3, 7, 5, 12, 18, 2, 8, 16, 4, 10],
-        'loan_amnt': [1000, 5000, 2000, 10000, 8000, 15000, 20000, 2500, 7500, 12000,
-                      3000, 6000, 4000, 11000, 18000, 3500, 9000, 15000, 6500, 13000],
-        'loan_int_rate': [12.9, 7.5, 14.2, 8.8, 9.5, 6.5, 5.9, 13.5, 10.1, 7.8,
-                          11.5, 8.1, 13.9, 7.2, 6.1, 12.8, 9.2, 6.8, 10.5, 8.5],
-        'loan_percent_income': [0.10, 0.11, 0.10, 0.14, 0.15, 0.18, 0.21, 0.08, 0.12, 0.16,
-                                0.09, 0.13, 0.10, 0.13, 0.18, 0.07, 0.12, 0.16, 0.11, 0.17],
-        'person_home_ownership': ['RENT', 'MORTGAGE', 'OWN', 'RENT', 'MORTGAGE', 'MORTGAGE', 'OWN', 'RENT', 'MORTGAGE', 'OWN',
-                                  'RENT', 'OWN', 'RENT', 'MORTGAGE', 'OWN', 'RENT', 'MORTGAGE', 'OWN', 'RENT', 'MORTGAGE'],
-        'loan_intent': ['EDUCATION', 'MEDICAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT', 'PERSONAL', 'VENTURE', 'MEDICAL', 'EDUCATION', 'PERSONAL', 'DEBTCONSOLIDATION',
-                        'EDUCATION', 'MEDICAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT', 'VENTURE', 'PERSONAL', 'EDUCATION', 'MEDICAL', 'PERSONAL', 'DEBTCONSOLIDATION'],
-        'loan_status': [0, 0, 1, 0, 1, 0, 0, 1, 0, 1,
-                        1, 0, 1, 0, 0, 1, 0, 0, 1, 0]
+        'person_age': np.random.randint(20, 65, rows),
+        'person_income': np.random.randint(8000, 150000, rows),
+        'person_emp_length': np.random.randint(0, 30, rows),
+        'loan_amnt': np.random.randint(1000, 35000, rows),
+        'loan_int_rate': np.random.uniform(5.5, 22.0, rows).round(1),
+        'person_home_ownership': np.random.choice(['RENT', 'MORTGAGE', 'OWN', 'OTHER'], rows),
+        'loan_intent': np.random.choice(['EDUCATION', 'MEDICAL', 'PERSONAL', 'VENTURE', 'HOMEIMPROVEMENT', 'DEBTCONSOLIDATION'], rows),
+        'repayment_history': np.random.choice(['good', 'fair', 'poor'], rows, p=[0.6, 0.25, 0.15]),
+        'loan_purpose_category': np.random.choice(['productive_asset', 'emergency_need', 'consumption', 'debt_restructuring'], rows)
     })
+
+    # Calculate loan_percent_income dynamically
+    data['loan_percent_income'] = (data['loan_amnt'] / data['person_income']).round(2)
+
+    # Risk Logic for loan_status (0 = No Default, 1 = Default)
+    # A loan is marked as a default (1) if it meets high-risk criteria:
+    # 1. Repayment history is 'poor'
+    # 2. OR Loan is more than 40% of their income
+    # 3. OR Interest rate is very high (> 18%) AND history isn't 'good'
+    
+    def determine_status(row):
+        if row['repayment_history'] == 'poor':
+            return 1
+        if row['loan_percent_income'] > 0.40:
+            return 1
+        if row['loan_int_rate'] > 18.0 and row['repayment_history'] != 'good':
+            return 1
+        return 0
+
+    data['loan_status'] = data.apply(determine_status, axis=1)
+
+    # Save to Excel
     data.to_excel(file_path, index=False)
+    print(f"Successfully generated {rows} rows of data. ✅")
+
 def load_data(file_path):
     """
-    Loads data from an Excel file at the specified path.
+    Loads data from an Excel file using pandas.
     """
-    try:
-        # Changed from pd.read_csv to pd.read_excel
-        data = pd.read_excel(file_path)
-        print(f"Data loaded successfully from '{file_path}'.")
-        return data
-    except FileNotFoundError:
-        print(f"Error: The file '{file_path}' was not found.")
-        return None
-
-
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    
+    return pd.read_excel(file_path)
