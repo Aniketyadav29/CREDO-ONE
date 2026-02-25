@@ -66,7 +66,7 @@ async def predict_with_gemini(data_point, language='en'):
     }
 
     # UPDATED API Configuration for 2026 standards
-    apiKey = "AIzaSyBfz1SeEgx4pNxr5dp14Vv2pEQtS7167jg"
+    apiKey = "AIzaSyA8qC-PGqGsA65hZEegwUgH-ght_-VZUoI"
     # gemini-2.5-flash is the currently supported stable model for January 2026
     apiUrl = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={apiKey}"
     
