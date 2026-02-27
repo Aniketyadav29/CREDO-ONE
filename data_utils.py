@@ -1,4 +1,3 @@
-
 import random
 from Config import loan_data
 
