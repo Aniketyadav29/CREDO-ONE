@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import os
 from model import predict_with_gemini
 
-app = FastAPI(title="MicroRisk AI")
+app = FastAPI(title="CREDO AI ")
 
 # Check if the static directory exists to avoid the RuntimeError
 if not os.path.exists("static"):
@@ -47,3 +47,4 @@ async def get_prediction(data: LoanData):
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
