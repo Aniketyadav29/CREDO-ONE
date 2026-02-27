@@ -7,7 +7,7 @@ It's my first minor project
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![ML Framework](https://img.shields.io/badge/ML-XGBoost-orange)](https://xgboost.readthedocs.io/)
-[![AI Engine](https://img.shields.io/badge/AI-Gemini%20Flash-green)](https://ai.google.dev/)
+[![AI Engine](https://img.shields.io/badge/AI-Gemini%20Flash-green)](https://ai.google.dev/) 
 
 An advanced, hybrid risk assessment system tailored for microfinance institutions. This project leverages **Gradient Boosting (XGBoost)** for high-precision numerical classification and **Large Language Models (Google Gemini)** to provide human-readable qualitative analysis and financial justification.
 
