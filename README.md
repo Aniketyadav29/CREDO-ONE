@@ -4,6 +4,7 @@ It's my first minor project
 <br>
 
 # AI-Driven Microfinance Loan Risk Prediction 🏦🤖
+[![Credo AI Live](https://img.shields.io/badge/🚀_LIVE_PROJECT-CREDO_AI-black?style=for-the-badge&logo=render&logoColor=white)](https://credo-fin.onrender.com)
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![ML Framework](https://img.shields.io/badge/ML-XGBoost-orange)](https://xgboost.readthedocs.io/)
