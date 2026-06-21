@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Credit Risk Intelligence Platform - Dependencies
 
 # Core Framework
@@ -55,4 +55,3 @@ scikit-learn
 xgboost
 aiohttp
 openpyxl
->>>>>>> 8273da24b4ade75a28f8545701373e507a4bedbb
