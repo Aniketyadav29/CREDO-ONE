@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Configuration Management for Credit Risk Intelligence Platform
 Handles environment variables, validation rules, and business constraints.
@@ -247,6 +248,9 @@ def can_approve(user_role: str, risk_score: float) -> bool:
     return risk_score <= APPROVAL_THRESHOLDS_BY_ROLE[user_role]
 
 # --- Sample Loan Data (for reference/testing) ---
+=======
+
+>>>>>>> 8273da24b4ade75a28f8545701373e507a4bedbb
 loan_data = [
     {
         'person_age': 21,
@@ -3212,6 +3216,7 @@ loan_data = [
     "loan_purpose_category": "emergency need",
     "loan_status": 1
 },
+<<<<<<< HEAD
     {
     "person_age": 23,
     "person_income": 23456,
@@ -3239,3 +3244,6 @@ loan_data = [
     "loan_status": 3
 },
 ]
+=======
+]
+>>>>>>> 8273da24b4ade75a28f8545701373e507a4bedbb

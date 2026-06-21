@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -402,4 +403,97 @@
         window.onload = () => loadLayer('login.html');
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CREDO AI | Neural Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app-viewport"></div>
+
+    <script>
+        // --- Navigation Logic ---
+        async function loadLayer(file) {
+            const res = await fetch(`/static/${file}`);
+            document.getElementById('app-viewport').innerHTML = await res.text();
+            
+            // Re-personalize if dashboard is loaded
+            if(file === 'dashboard.html') {
+                const name = localStorage.getItem('user_name') || "User";
+                document.getElementById('user-display').innerHTML = `SESSION: ${name.toUpperCase()}`;
+                document.getElementById('welcome-header').innerHTML = `HELLO, ${name.split(' ')[0]}!<br><span style="color:#df99ff">ENGINE READY.</span>`;
+            }
+        }
+
+        function saveAndLogin() {
+            const name = document.getElementById('reg-name').value;
+            if(name) {
+                localStorage.setItem('user_name', name);
+                loadLayer('dashboard.html');
+            } else { alert("Please complete registration."); }
+        }
+
+        // --- Analysis Engine Logic (All 11 Parameters) ---
+        async function startAnalysis() {
+            const resDisplay = document.getElementById('result-display');
+            resDisplay.innerHTML = "Processing Neural Weights...";
+            
+            // Fetching all 11 parameters from dashboard.html
+            const payload = {
+                person_age: parseInt(document.getElementById('person_age').value) || 0,
+                person_income: parseInt(document.getElementById('person_income').value) || 0,
+                person_emp_length: parseInt(document.getElementById('person_emp_length').value) || 0,
+                loan_amnt: parseInt(document.getElementById('loan_amnt').value) || 0,
+                loan_int_rate: parseFloat(document.getElementById('loan_int_rate').value) || 0.0,
+                loan_percent_income: parseFloat(document.getElementById('loan_percent_income').value) || 0.0,
+                person_home_ownership: document.getElementById('person_home_ownership').value,
+                loan_intent: document.getElementById('loan_intent').value,
+                loan_status: parseInt(document.getElementById('loan_status').value) || 0,
+                repayment_history: document.getElementById('repayment_history').value,
+                loan_purpose_category: document.getElementById('loan_purpose_category').value
+            };
+
+            try {
+                const response = await fetch('/api/predict', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify(payload) 
+                });
+                const data = await response.json();
+                
+                // Styling based on prediction result
+                if (data.prediction === 0) {
+                    resDisplay.style.color = "#27ae60"; // Green for Approved
+                    resDisplay.innerHTML = "VERDICT: APPROVED<br><small>" + (data.reason.summary || "") + "</small>";
+                } else {
+                    resDisplay.style.color = "#c0392b"; // Red for Rejected
+                    resDisplay.innerHTML = "VERDICT: REJECTED<br><small>" + (data.reason.summary || "") + "</small>";
+                }
+            } catch(e) { 
+                resDisplay.innerHTML = "Neural Tunnel Error. Check connection."; 
+            }
+        }
+
+        // --- Feedback Logic ---
+        function submitFeedback() {
+            const feedback = document.getElementById('user-feedback').value;
+            const status = document.getElementById('feedback-status');
+            if(feedback.trim() !== "") {
+                status.style.display = "block";
+                document.getElementById('user-feedback').value = "";
+                setTimeout(() => { status.style.display = "none"; }, 3000);
+            } else {
+                alert("Please enter a review.");
+            }
+        }
+
+        // Initial Load
+        window.onload = () => loadLayer('login.html');
+    </script>
+</body>
+>>>>>>> 8273da24b4ade75a28f8545701373e507a4bedbb
 </html>
