@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Depends, Header
 from fastapi.staticfiles import StaticFiles
@@ -422,7 +422,6 @@ async def get_audit_trail(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
-=======
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -473,4 +472,4 @@ async def get_prediction(data: LoanData):
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 
->>>>>>> 8273da24b4ade75a28f8545701373e507a4bedbb
+
