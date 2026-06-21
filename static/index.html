@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CREDO AI | Credit Risk Intelligence Platform</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="app-viewport"></div>
+
+    <script>
+        const ASSET_VERSION = '20260409-13';
+        const AUTH_STORAGE_KEYS = {
+            token: 'access_token',
+            username: 'user_name',
+            fullName: 'full_name',
+            role: 'user_role'
+        };
+
+        function getStoredAuthToken() {
+            return localStorage.getItem(AUTH_STORAGE_KEYS.token) || '';
+        }
+
+        function getAuthHeaders(extraHeaders = {}) {
+            const token = getStoredAuthToken();
+            return token ? { ...extraHeaders, Authorization: `Bearer ${token}` } : { ...extraHeaders };
+        }
+
+        function setAuthStatus(message, kind = 'error') {
+            const errorEl = document.getElementById('auth-error');
+            const successEl = document.getElementById('auth-success');
+
+            if (errorEl) {
+                errorEl.classList.remove('visible');
+                errorEl.textContent = '';
+            }
+            if (successEl) {
+                successEl.classList.remove('visible');
+                successEl.textContent = '';
+            }
+
+            if (!message) {
+                return;
+            }
+
+            const target = kind === 'success' ? successEl : errorEl;
+            if (target) {
+                target.textContent = message;
+                target.classList.add('visible');
+            }
+        }
+
+        function setAuthLoading(isLoading) {
+            const loadingEl = document.getElementById('auth-loading');
+            if (loadingEl) {
+                loadingEl.classList.toggle('visible', Boolean(isLoading));
+            }
+        }
+
+        function persistAuthSession(data) {
+            if (!data) {
+                return;
+            }
+
+            if (data.access_token) {
+                localStorage.setItem(AUTH_STORAGE_KEYS.token, data.access_token);
+            }
+
+            const user = data.user || {};
+            const username = user.username || data.username || '';
+            const fullName = user.full_name || data.full_name || username || '';
+            const role = user.role || data.role || '';
+
+            if (username) {
+                localStorage.setItem(AUTH_STORAGE_KEYS.username, username);
+            }
+            if (fullName) {
+                localStorage.setItem(AUTH_STORAGE_KEYS.fullName, fullName);
+            }
+            if (role) {
+                localStorage.setItem(AUTH_STORAGE_KEYS.role, role);
+            }
+        }
+
+        function switchAuthTab(tab) {
+            const registerTab = document.getElementById('tab-register');
+            const loginTab = document.getElementById('tab-login');
+            const registerForm = document.getElementById('form-register');
+            const loginForm = document.getElementById('form-login');
+
+            if (!registerTab || !loginTab || !registerForm || !loginForm) {
+                return;
+            }
+
+            const isRegister = tab === 'register';
+            registerTab.classList.toggle('active', isRegister);
+            loginTab.classList.toggle('active', !isRegister);
+            registerForm.style.display = isRegister ? 'flex' : 'none';
+            loginForm.style.display = isRegister ? 'none' : 'flex';
+            setAuthStatus('');
+        }
+
+        async function submitAuth(endpoint, payload) {
+            setAuthLoading(true);
+            setAuthStatus('');
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    const detail = data?.detail;
+                    const errorText = typeof detail === 'string' ? detail : (detail ? JSON.stringify(detail) : 'Authentication failed.');
+                    setAuthStatus(errorText, 'error');
+                    return false;
+                }
+
+                persistAuthSession(data);
+                const fullName = data?.user?.full_name || localStorage.getItem(AUTH_STORAGE_KEYS.fullName) || 'User';
+                localStorage.setItem('user_name', fullName);
+                setAuthStatus(data?.message || 'Authentication successful.', 'success');
+                await loadLayer('dashboard.html');
+                return true;
+            } catch (error) {
+                setAuthStatus(error?.message || 'Network error. Please try again.', 'error');
+                return false;
+            } finally {
+                setAuthLoading(false);
+            }
+        }
+
+        async function handleRegister() {
+            const fullName = document.getElementById('reg-name')?.value.trim() || '';
+            const username = document.getElementById('reg-user')?.value.trim() || '';
+            const password = document.getElementById('reg-pass')?.value || '';
+            const mobile = document.getElementById('reg-mobile')?.value.trim() || '';
+
+            if (!fullName || !username || !password) {
+                setAuthStatus('Full name, login ID, and password are required.', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                setAuthStatus('Password must be at least 6 characters long.', 'error');
+                return;
+            }
+
+            await submitAuth('/api/auth/register', {
+                full_name: fullName,
+                username,
+                password,
+                mobile
+            });
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('login-user')?.value.trim() || '';
+            const password = document.getElementById('login-pass')?.value || '';
+
+            if (!username || !password) {
+                setAuthStatus('Login ID and password are required.', 'error');
+                return;
+            }
+
+            await submitAuth('/api/auth/login', {
+                username,
+                password
+            });
+        }
+
+        async function loadLayer(file) {
+            const res = await fetch(`/static/${file}?v=${ASSET_VERSION}`, { cache: 'no-store' });
+            const html = await res.text();
+            document.getElementById('app-viewport').innerHTML = html;
+            
+            if(file === 'dashboard.html') {
+                const name = localStorage.getItem('user_name') || "User";
+                document.getElementById('welcome-note').innerText = "Welcome back, " + name + "!";
+            }
+        }
+
+        // --- FIXED TOGGLE LOGIC FOR LOGIN.HTML ---
+        function toggleLoginDetail(id) {
+            const sections = ['who-we-are', 'what-we-do', 'insights', 'careers', 'contact-us'];
+            sections.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) {
+                    if (s === id) {
+                        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'block' : 'none';
+                    } else {
+                        el.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function saveAndLogin() {
+            const name = document.getElementById('reg-name').value;
+            if(name) {
+                localStorage.setItem('user_name', name);
+                loadLayer('dashboard.html');
+            } else { alert("Please complete registration."); }
+        }
+
+        async function startAnalysis() {
+            const res = document.getElementById('result-display');
+            const explanationCard = document.getElementById('decision-explanation');
+            const summaryEl = document.getElementById('decision-summary');
+            const breakdownEl = document.getElementById('decision-breakdown');
+            const conclusionEl = document.getElementById('decision-conclusion');
+            const graphCard = document.getElementById('risk-graph');
+            const barsEl = document.getElementById('risk-bars');
+
+            res.innerHTML = "Running AI-Assisted Underwriting...";
+            if (explanationCard) explanationCard.style.display = 'none';
+            if (graphCard) graphCard.style.display = 'none';
+
+            const incomeVal = parseInt(document.getElementById('person_income').value) || 0;
+            const loanVal = parseInt(document.getElementById('loan_amnt').value) || 0;
+            const ltiInput = parseFloat(document.getElementById('loan_percent_income').value);
+            const derivedLti = incomeVal > 0 ? loanVal / incomeVal : 0;
+            let finalLti = Number.isFinite(ltiInput) && ltiInput >= 0 ? ltiInput : derivedLti;
+            if (finalLti > 1) {
+                finalLti = finalLti / 100.0;
+            }
+
+            const payload = {
+                person_age: parseInt(document.getElementById('person_age').value) || 0,
+                person_income: incomeVal,
+                person_emp_length: parseInt(document.getElementById('person_emp_length').value) || 0,
+                loan_amnt: loanVal,
+                loan_int_rate: parseFloat(document.getElementById('loan_int_rate').value) || 0.0,
+                loan_percent_income: finalLti,
+                person_home_ownership: document.getElementById('person_home_ownership').value,
+                loan_intent: document.getElementById('loan_intent').value,
+                loan_status: parseInt(document.getElementById('loan_status').value) || 0,
+                repayment_history: document.getElementById('repayment_history').value,
+                loan_purpose_category: document.getElementById('loan_purpose_category').value
+            };
+
+            const getRiskFactors = (inputData) => {
+                const safeIncome = Math.max(inputData.person_income, 1);
+                const loanToIncome = Math.min((inputData.loan_amnt / safeIncome) * 100, 100);
+                const interestRisk = Math.min((inputData.loan_int_rate / 35) * 100, 100);
+                const ltiRisk = Math.min(inputData.loan_percent_income * 150, 100);
+                const empRisk = Math.max(0, Math.min(100 - (inputData.person_emp_length * 10), 100));
+                const ageRisk = inputData.person_age < 21 ? 80 : (inputData.person_age > 60 ? 55 : 25);
+
+                return [
+                    { label: 'Loan vs Income', value: Math.round(loanToIncome), color: '#ff7675' },
+                    { label: 'Interest Rate', value: Math.round(interestRisk), color: '#fdcb6e' },
+                    { label: 'LTI Ratio', value: Math.round(ltiRisk), color: '#74b9ff' },
+                    { label: 'Employment Stability', value: Math.round(empRisk), color: '#55efc4' },
+                    { label: 'Age Segment Risk', value: Math.round(ageRisk), color: '#a29bfe' }
+                ];
+            };
+
+            const renderRiskGraph = (factors) => {
+                if (!barsEl) return;
+                barsEl.innerHTML = factors.map((factor) => {
+                    return `
+                        <div style="margin-bottom: 14px;">
+                            <div style="display:flex; justify-content:space-between; color:white; font-size:0.92rem; margin-bottom:6px;">
+                                <span>${factor.label}</span>
+                                <span>${factor.value}%</span>
+                            </div>
+                            <div style="height:12px; background: rgba(255,255,255,0.12); border-radius:999px; overflow:hidden;">
+                                <div style="height:100%; width:${factor.value}%; background:${factor.color}; box-shadow: 0 0 12px ${factor.color}; transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const renderFallbackExplanation = (pred, summaryText, breakdownText, conclusionText, factors) => {
+                const decisionText = pred === 0
+                    ? "<span style='color:#2ecc71'>APPROVED</span>"
+                    : (pred === 1 ? "<span style='color:#e74c3c'>REJECTED</span>" : "<span style='color:#f1c40f'>UNAVAILABLE</span>");
+
+                const barsHtml = factors.map((factor) => `
+                    <div style="margin-bottom: 12px; text-align:left;">
+                        <div style="display:flex; justify-content:space-between; color:white; font-size:0.9rem; margin-bottom:5px;">
+                            <span>${factor.label}</span>
+                            <span>${factor.value}%</span>
+                        </div>
+                        <div style="height:10px; background: rgba(255,255,255,0.12); border-radius:999px; overflow:hidden;">
+                            <div style="height:100%; width:${factor.value}%; background:${factor.color}; box-shadow:0 0 10px ${factor.color};"></div>
+                        </div>
+                    </div>
+                `).join('');
+
+                res.innerHTML = `
+                    <div>${decisionText}</div>
+                    <div style="margin-top:16px; text-align:left; font-size:1rem; font-weight:600; text-transform:none; background: rgba(255,255,255,0.06); border:1px solid rgba(223,153,255,0.45); border-radius:18px; padding:18px;">
+                        <p style="margin:0 0 10px 0; color:white;"><strong>Summary:</strong> ${summaryText}</p>
+                        <p style="margin:0 0 10px 0; color:rgba(255,255,255,0.85);"><strong>Breakdown:</strong> ${breakdownText}</p>
+                        <p style="margin:0; color:${pred === 0 ? '#2ed573' : '#ff6b81'};"><strong>Conclusion:</strong> ${conclusionText}</p>
+                    </div>
+                    <div style="margin-top:14px; text-align:left; font-size:1rem; font-weight:700; text-transform:none; background: rgba(255,255,255,0.06); border:1px solid rgba(78,78,230,0.45); border-radius:18px; padding:18px;">
+                        <p style="margin:0 0 12px 0; color:#8ba5ff; text-transform:uppercase;">Risk Factor Graph</p>
+                        ${barsHtml}
+                    </div>
+                `;
+            };
+
+            try {
+                const response = await fetch('/api/predict', { method: 'POST', headers: getAuthHeaders({'Content-Type': 'application/json'}), body: JSON.stringify(payload) });
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    localStorage.removeItem(AUTH_STORAGE_KEYS.token);
+                    localStorage.removeItem(AUTH_STORAGE_KEYS.username);
+                    localStorage.removeItem(AUTH_STORAGE_KEYS.fullName);
+                    localStorage.removeItem(AUTH_STORAGE_KEYS.role);
+                    res.innerHTML = "<span style='color:#f1c40f'>SESSION EXPIRED. PLEASE LOG IN AGAIN.</span>";
+                    await loadLayer('login.html');
+                    return;
+                }
+
+                if (!response.ok) {
+                    const detail = data?.detail;
+                    let errorText = 'Request failed.';
+
+                    if (detail?.validation_errors && Array.isArray(detail.validation_errors)) {
+                        errorText = detail.validation_errors.join(' | ');
+                    } else if (typeof detail === 'string') {
+                        errorText = detail;
+                    } else if (detail) {
+                        errorText = JSON.stringify(detail);
+                    }
+
+                    if (response.status === 503) {
+                        res.innerHTML = "<span style='color:#f39c12'>GEMINI SERVICE UNAVAILABLE</span>";
+                    } else {
+                        res.innerHTML = "<span style='color:#f1c40f'>INPUT VALIDATION ERROR</span>";
+                    }
+                    if (explanationCard && summaryEl && breakdownEl && conclusionEl) {
+                        explanationCard.style.display = 'block';
+                        summaryEl.textContent = response.status === 503
+                            ? 'Summary: Gemini could not be reached right now.'
+                            : 'Summary: Please adjust input values to satisfy policy constraints.';
+                        breakdownEl.textContent = `Breakdown: ${errorText}`;
+                        conclusionEl.textContent = response.status === 503
+                            ? 'Conclusion: Please retry in a moment for Gemini-generated explanation.'
+                            : 'Conclusion: Prediction not executed due to invalid input.';
+                        conclusionEl.style.color = '#ff6b81';
+                    }
+                    return;
+                }
+
+                const pred = Number(data.prediction);
+                if (pred === 0) {
+                    res.innerHTML = "<span style='color:#2ecc71'>APPROVED</span>";
+                } else if (pred === 1) {
+                    res.innerHTML = "<span style='color:#e74c3c'>REJECTED</span>";
+                } else {
+                    res.innerHTML = "<span style='color:#f1c40f'>UNAVAILABLE</span>";
+                }
+
+                const sourceText = data?.reason?.source || (
+                    data?.decision_source === 'rule_based_guardrail' ? 'Rule-based guardrail explanation' :
+                    data?.decision_source === 'gemini_with_rule_guardrail' ? 'Gemini narrative with rule-based guardrail' :
+                    data?.decision_source === 'local_fallback' ? 'Local fallback explanation' : 'Gemini explanation'
+                );
+                const summaryText = data?.reason?.summary || 'No summary received from model.';
+                const breakdownText = data?.reason?.detailed_breakdown || 'No detailed explanation available.';
+                const conclusionText = data?.overall_conclusion || 'Conclusion not available.';
+                const factors = getRiskFactors(payload);
+
+                if (explanationCard && summaryEl && breakdownEl && conclusionEl) {
+                    explanationCard.style.display = 'block';
+                    summaryEl.innerHTML = `<strong style="color:#df99ff;">Source:</strong> ${sourceText}<br><strong style="color:#df99ff; display:block; margin-top:10px;">Summary:</strong> ${summaryText}`;
+                    breakdownEl.innerHTML = `<strong style="color:#df99ff;">Breakdown:</strong> ${breakdownText}<br><span style="display:block; margin-top:8px; color:rgba(255,255,255,0.8); font-size:0.92rem;">Key factors reviewed: repayment history, loan-to-income ratio, interest rate, employment stability, and age segment.</span>`;
+                    conclusionEl.innerHTML = `<strong style="color:${pred === 0 ? '#2ed573' : '#ff6b81'};">Conclusion:</strong> ${conclusionText}`;
+                    conclusionEl.style.color = pred === 0 ? '#2ed573' : '#ff6b81';
+                } else {
+                    renderFallbackExplanation(pred, summaryText, breakdownText, conclusionText, factors);
+                }
+
+                renderRiskGraph(factors);
+                if (graphCard) graphCard.style.display = 'block';
+            } catch(e) {
+                res.innerHTML = "Connection Error.";
+                if (explanationCard && summaryEl && breakdownEl && conclusionEl) {
+                    explanationCard.style.display = 'block';
+                    summaryEl.textContent = 'Summary: Could not complete analysis.';
+                    breakdownEl.textContent = `Breakdown: ${e.message || 'Unknown client-side error.'}`;
+                    conclusionEl.textContent = 'Conclusion: Please retry after checking server connection.';
+                    conclusionEl.style.color = '#ff6b81';
+                }
+            }
+        }
+
+        window.onload = () => loadLayer('login.html');
+    </script>
+</body>
+</html>

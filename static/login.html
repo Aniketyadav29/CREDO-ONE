@@ -1,0 +1,239 @@
+<div id="auth-layer">
+    <style>
+        #auth-layer {
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        #auth-layer [style*="backdrop-filter"] {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .auth-tab-bar { display:flex; gap:0; margin-bottom:24px; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.15); }
+        .auth-tab { flex:1; padding:13px 0; text-align:center; font-weight:700; font-size:0.85rem; letter-spacing:1.5px; cursor:pointer; transition:0.3s; background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.5); text-transform:uppercase; border:none; }
+        .auth-tab.active { background:linear-gradient(135deg, var(--accent), #2a2ab8); color:white; }
+        .auth-tab:hover:not(.active) { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.8); }
+        .auth-form { display:flex; flex-direction:column; gap:15px; }
+        .auth-error { display:none; background:rgba(231,76,60,0.15); border:1px solid rgba(231,76,60,0.4); border-radius:12px; padding:12px 16px; color:#ff6b81; font-size:0.9rem; font-weight:600; text-align:center; }
+        .auth-error.visible { display:block; animation: fadeIn 0.3s ease; }
+        .auth-success { display:none; background:rgba(46,213,115,0.15); border:1px solid rgba(46,213,115,0.4); border-radius:12px; padding:12px 16px; color:#2ed573; font-size:0.9rem; font-weight:600; text-align:center; }
+        .auth-success.visible { display:block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:translateY(0); } }
+        .auth-loading { display:none; text-align:center; color:#df99ff; font-weight:600; font-size:0.9rem; }
+        .auth-loading.visible { display:block; }
+        .auth-loading::after { content:''; display:inline-block; width:14px; height:14px; border:2px solid #df99ff; border-top:2px solid transparent; border-radius:50%; animation: spin 0.8s linear infinite; margin-left:8px; vertical-align:middle; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+    </style>
+    <nav style="display:flex; justify-content:space-between; align-items:center; padding:15px 50px; background:rgba(0,0,0,0.55); border-bottom: 1px solid rgba(255,255,255,0.1); position:sticky; top:0; z-index:10000;">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:30px; height:30px; background:white; border-radius:8px; box-shadow: 0 0 15px #df99ff;"></div>
+            <h2 style="margin:0; color:white; font-size:1.3rem; font-weight:800; letter-spacing:-0.5px;">CREDO AI</h2>
+        </div>
+        
+        <div style="display:flex; align-items:center; justify-content: flex-end;">
+            <button class="portfolio-btn" onclick="toggleLoginDetail('who-we-are')" style="margin-left: 20px; min-width: 120px;">WHO WE ARE</button>
+            <button class="portfolio-btn" onclick="toggleLoginDetail('what-we-do')" style="margin-left: 20px; min-width: 120px;">WHAT WE DO</button>
+            <button class="portfolio-btn" onclick="toggleLoginDetail('insights')" style="margin-left: 20px; min-width: 120px;">INSIGHTS</button>
+            <button class="portfolio-btn" onclick="toggleLoginDetail('careers')" style="margin-left: 20px; min-width: 120px;">CAREERS</button>
+            <button class="portfolio-btn" onclick="toggleLoginDetail('contact-us')" style="margin-left: 20px; min-width: 120px;">CONTACT US</button>
+        </div>
+    </nav>
+
+    <header style="text-align:center; padding: 50px 0 30px;">
+        <div class="credo-logo-3d"></div>
+        <h1 class="neon-flicker-title" style="font-size: 3.5rem; font-weight: 800; margin: 10px 0; color: white;">CREDO <span style="color:#df99ff">AI</span></h1>
+        <p style="opacity: 0.6; letter-spacing: 4px; text-transform: uppercase; font-size: 0.75rem;">Credit Risk Intelligence Platform</p>
+    </header>
+
+    <section style="padding: 0 60px; max-width: 1200px; margin: 0 auto;">
+        <div id="who-we-are" class="card" style="display:none; border-left: 5px solid #df99ff; background:rgba(255,255,255,0.05); margin-bottom: 30px;">
+            <h2 style="color:#df99ff">CREDIT RISK INTELLIGENCE PLATFORM</h2>
+            <p style="font-size: 1.05rem; line-height: 1.8; color: rgba(255,255,255,0.92);">CREDO AI is a financial intelligence team focused on microfinance risk decisions for lenders, NGOs, and community finance institutions. We combine responsible AI practices with practical field realities to deliver transparent lending decisions, not black-box outputs.</p>
+            <div class="info-grid">
+                <div class="info-pill"><strong>Founded:</strong> 2026</div>
+                <div class="info-pill"><strong>Core Domain:</strong> Explainable Lending Decision Engine</div>
+                <div class="info-pill"><strong>Primary Market:</strong> Microfinance & MSME Lending</div>
+                <div class="info-pill"><strong>Decision Focus:</strong> Human-in-the-Loop Approval Workflow</div>
+            </div>
+            <div class="info-grid" style="margin-top:14px;">
+                <div class="metric-card"><h4>98.7%</h4><p>Decision Consistency</p></div>
+                <div class="metric-card"><h4>40%+</h4><p>Manual Review Reduction</p></div>
+                <div class="metric-card"><h4>&lt; 2s</h4><p>Avg Response Time</p></div>
+                <div class="metric-card"><h4>24/7</h4><p>Risk Screening</p></div>
+            </div>
+            <div style="margin-top: 18px; padding: 16px; border-radius: 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(223,153,255,0.25);">
+                <h4 style="margin:0 0 8px 0; color:#df99ff; letter-spacing:0.5px;">Mission Statement</h4>
+                <p style="margin:0; color: rgba(255,255,255,0.85); line-height:1.7;">Enable fair access to credit by combining borrower context, repayment behavior, and explainable AI decisions that compliance teams can trust.</p>
+            </div>
+        </div>
+
+        <div id="what-we-do" class="card" style="display:none; border-left: 5px solid #2ed573; background:rgba(255,255,255,0.05); margin-bottom: 30px;">
+            <h2 style="color:#2ed573">AI-ASSISTED UNDERWRITING</h2>
+            <p style="color: rgba(255,255,255,0.9); line-height:1.75;">We provide full-cycle loan intelligence solutions, from applicant scoring to portfolio monitoring. Every decision includes clear reasoning so credit officers understand why a case is approved or flagged.</p>
+            <div class="service-grid">
+                <div class="service-card">
+                    <h4>Smart Underwriting</h4>
+                    <p>AI-based pre-screening with instant approve/reject recommendations and confidence-oriented explanations.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Portfolio Risk Monitoring</h4>
+                    <p>Track repayment trends, rising-risk segments, and branch-level default indicators before delinquency spikes.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Compliance-Ready Decision Audit Trail</h4>
+                    <p>Decision summaries, detailed breakdowns, and audit-ready outputs for internal governance and regulatory review.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Field Team Decision Support</h4>
+                    <p>Clear recommendation notes for agents with human approval control at critical decision points.</p>
+                </div>
+            </div>
+            <div style="margin-top:20px;">
+                <h4 style="margin:0 0 10px 0; color:#2ed573;">Operational Coverage</h4>
+                <div style="display:grid; grid-template-columns: repeat(3, minmax(150px, 1fr)); gap:12px;">
+                    <div class="info-pill">Risk Scoring and Decision Support</div>
+                    <div class="info-pill">Fraud Pattern Alerts</div>
+                    <div class="info-pill">Delinquency Early Warning Signals</div>
+                    <div class="info-pill">Credit Policy Support</div>
+                    <div class="info-pill">Real-Time Applicant Risk Profiling</div>
+                    <div class="info-pill">Field Report Intelligence</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== REGISTRATION / LOGIN CARD ===== -->
+    <div style="display: flex; justify-content: center; padding: 20px 0;">
+        <div class="login-card" style="width: 440px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2); border-radius: 40px; padding: 45px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);">
+
+            <!-- Tab bar -->
+            <div class="auth-tab-bar">
+                <button class="auth-tab active" id="tab-register" onclick="switchAuthTab('register')">REGISTER</button>
+                <button class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">LOGIN</button>
+            </div>
+
+            <!-- Shared error / success banners -->
+            <div id="auth-error" class="auth-error"></div>
+            <div id="auth-success" class="auth-success"></div>
+            <div id="auth-loading" class="auth-loading">Authenticating</div>
+
+            <!-- REGISTER form -->
+            <div id="form-register" class="auth-form">
+                <input type="text"     id="reg-name"   class="login-input" placeholder="FULL NAME"  autocomplete="name">
+                <input type="text"     id="reg-user"   class="login-input" placeholder="LOGIN ID"   autocomplete="username">
+                <input type="password" id="reg-pass"   class="login-input" placeholder="PASSWORD (MIN 6 CHARS)" autocomplete="new-password">
+                <input type="text"     id="reg-mobile" class="login-input" placeholder="MOBILE NO (OPTIONAL)" autocomplete="tel">
+                <button type="button" class="cta-btn" onclick="handleRegister()" style="position: relative; z-index: 100;">CREATE ACCOUNT & ENTER</button>
+            </div>
+
+            <!-- LOGIN form (hidden by default) -->
+            <div id="form-login" class="auth-form" style="display:none;">
+                <input type="text"     id="login-user" class="login-input" placeholder="LOGIN ID"  autocomplete="username">
+                <input type="password" id="login-pass" class="login-input" placeholder="PASSWORD"  autocomplete="current-password">
+                <button type="button" class="cta-btn" onclick="handleLogin()" style="position: relative; z-index: 100;">AUTHORIZE & ENTER</button>
+            </div>
+        </div>
+    </div>
+
+    <section style="padding: 0 60px; max-width: 1200px; margin: 0 auto;">
+        <div id="insights" class="card" style="display:none; border-left: 5px solid #1e90ff; background:rgba(255,255,255,0.05); margin-top: 30px;">
+            <h2 style="color:#1e90ff">RISK SCORING AND DECISION SUPPORT INSIGHTS</h2>
+            <p style="color: rgba(255,255,255,0.9); line-height:1.75;">Our analytics engine transforms raw borrower data into decision intelligence for underwriting and collections. The goal is to reduce risk exposure while protecting borrower inclusion.</p>
+            <div class="info-grid" style="margin-top:14px;">
+                <div class="metric-card"><h4>45%</h4><p>Improvement in Recovery Efficiency</p></div>
+                <div class="metric-card"><h4>31%</h4><p>Lower High-Risk Onboarding</p></div>
+                <div class="metric-card"><h4>22%</h4><p>Faster Credit Decisions</p></div>
+                <div class="metric-card"><h4>18%</h4><p>Reduction in Early Defaults</p></div>
+            </div>
+            <div style="margin-top:18px; padding:16px; border-radius:14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(30,144,255,0.28);">
+                <h4 style="margin:0 0 10px 0; color:#70b6ff;">Quarterly Trend Snapshot and Governance Notes</h4>
+                <p style="margin:0 0 10px 0; color: rgba(255,255,255,0.85);">Q1 to Q2 showed stronger repayment stability in applicants with healthy loan-to-income ratio and consistent employment history.</p>
+                <p style="margin:0; color: rgba(255,255,255,0.8);">Primary high-risk triggers: poor repayment history, high interest burden, and elevated loan-percent-income levels. Portfolio review includes model governance and drift monitoring checks.</p>
+            </div>
+        </div>
+
+        <div id="careers" class="card" style="display:none; border-left: 5px solid #ffa502; background:rgba(255,255,255,0.05); margin-top: 30px;">
+            <h2 style="color:#ffa502">NEURAL CAREERS</h2>
+            <p style="color: rgba(255,255,255,0.9); line-height:1.75;">Build responsible AI systems for real-world lending challenges. We are hiring engineers, analysts, and product specialists who care about both performance and financial inclusion.</p>
+            <div class="service-grid">
+                <div class="service-card">
+                    <h4>Senior Python Engineer</h4>
+                    <p>FastAPI, async APIs, data pipelines, and model-serving reliability.</p>
+                </div>
+                <div class="service-card">
+                    <h4>ML Risk Analyst</h4>
+                    <p>Feature analysis, model behavior checks, and explainability reporting.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Frontend Product Developer</h4>
+                    <p>Decision dashboards, data visualization, and UX for credit teams.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Credit Operations Specialist</h4>
+                    <p>Bridge domain policy and model output with branch operations.</p>
+                </div>
+            </div>
+            <div style="margin-top:16px; display:flex; gap:14px; flex-wrap:wrap;">
+                <span class="info-pill">Remote-First</span>
+                <span class="info-pill">Performance Bonus</span>
+                <span class="info-pill">Learning Budget</span>
+                <span class="info-pill">Mentorship Program</span>
+            </div>
+        </div>
+
+        <div id="contact-us" class="card" style="display:none; border-left: 5px solid #ff4757; background:rgba(255,255,255,0.05); margin-top: 30px;">
+            <h2 style="color:#ff4757">SECURE CONTACT</h2>
+            <p style="color: rgba(255,255,255,0.9); line-height:1.75;">Reach out for partnerships, pilot deployment, product demos, and hiring discussions. Our team responds quickly to technical and business queries.</p>
+            <div class="service-grid">
+                <div class="service-card">
+                    <h4>Business Inquiries</h4>
+                    <p>Credit risk platform demo, pricing, and partner onboarding.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Technical Support</h4>
+                    <p>Integration, API setup, dashboard customization, and issue support.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Collaboration</h4>
+                    <p>Academic research, lending innovation labs, and field pilots.</p>
+                </div>
+                <div class="service-card">
+                    <h4>Talent Connect</h4>
+                    <p>Career opportunities and direct communication with the hiring team.</p>
+                </div>
+            </div>
+            <div style="margin-top:16px; padding:16px; border-radius:14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,71,87,0.25);">
+                <p style="margin:0 0 8px 0; color:#ffd7db;"><strong>Primary Contact:</strong> Aniket Yadav</p>
+                <p style="margin:0 0 8px 0; color:#ffd7db;"><strong>Email:</strong> anikety7905@gmail.com</p>
+                <p style="margin:0; color:#ffd7db;"><strong>Response Window:</strong> Within 24 business hours</p>
+            </div>
+            <div style="display:flex; gap:25px; margin-top:16px; flex-wrap:wrap;">
+                <a href="https://linkedin.com/in/aniket-yadav-037a03299" target="_blank" style="color:#8fc9ff; text-decoration:none; font-weight:800;">LINKEDIN</a>
+                <a href="https://github.com/Aniketyadav29" target="_blank" style="color:#ffffff; text-decoration:none; font-weight:800;">GITHUB</a>
+                <a href="https://www.instagram.com/myyself_suraj_" target="_blank" style="color:#ff8fb6; text-decoration:none; font-weight:800;">INSTAGRAM</a>
+            </div>
+        </div>
+    </section>
+
+    <footer style="text-align:center; padding: 60px 0; opacity: 0.4; font-size: 0.8rem; color:white; letter-spacing: 2px;">
+        DEVELOPED BY ANIKET YADAV | &copy; 2026 CREDO AI SYSTEMS
+    </footer>
+
+    <style>
+        .portfolio-btn { background: rgba(255,255,255,0.05); border: 1px solid #df99ff; color: white; border-radius: 20px; cursor: pointer; transition: 0.3s; font-weight: 700; text-transform: uppercase; padding: 10px 15px; font-size: 0.7rem; }
+        .portfolio-btn:hover { background: #df99ff; color: #1a0a20; box-shadow: 0 0 15px #df99ff; }
+        .info-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-top:16px; }
+        .info-pill { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 11px 12px; color: rgba(255,255,255,0.9); font-size: 0.88rem; }
+        .metric-card { background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 12px; }
+        .metric-card h4 { margin: 0 0 6px 0; color: white; font-size: 1.2rem; }
+        .metric-card p { margin: 0; color: rgba(255,255,255,0.8); font-size: 0.84rem; line-height:1.4; }
+        .service-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:16px; }
+        .service-card { background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 14px; }
+        .service-card h4 { margin: 0 0 8px 0; color: white; font-size: 0.96rem; letter-spacing: 0.3px; }
+        .service-card p { margin: 0; color: rgba(255,255,255,0.82); font-size: 0.88rem; line-height: 1.5; }
+        @keyframes pulse-glow { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 30px #df99ff; } }
+        @keyframes blink-fast { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; box-shadow: 0 0 15px currentColor; } }
+    </style>
+
+    <!-- Auth JS is in index.html (innerHTML doesn't execute script tags) -->
+</div>
