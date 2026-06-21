@@ -46,7 +46,6 @@ slowapi==0.1.9
 # Documentation
 sphinx==7.2.6
 sphinx-rtd-theme==2.0.0
-=======
 fastapi
 uvicorn
 pandas
