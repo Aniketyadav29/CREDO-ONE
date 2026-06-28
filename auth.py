@@ -71,7 +71,10 @@ def decode_access_token(token: str) -> dict:
 # Database helpers — users table
 # ---------------------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "credit_risk_app.db")
+if os.getenv("VERCEL") == "1":
+    DB_PATH = "/tmp/credit_risk_app.db"
+else:
+    DB_PATH = os.path.join(BASE_DIR, "credit_risk_app.db")
 
 
 def init_users_table():

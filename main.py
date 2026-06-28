@@ -125,7 +125,10 @@ NO_CACHE_HEADERS = {
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-DB_PATH = os.path.join(BASE_DIR, "credit_risk_app.db")
+if os.getenv("VERCEL") == "1":
+    DB_PATH = "/tmp/credit_risk_app.db"
+else:
+    DB_PATH = os.path.join(BASE_DIR, "credit_risk_app.db")
 
 
 def init_db():
