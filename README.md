@@ -2,6 +2,8 @@
 
 **Enterprise-Grade AI-Assisted Lending Decision System**
 
+[![CREDO AI](https://img.shields.io/badge/CREDO_AI-Credit_Risk_Intelligence-0052FF?style=for-the-badge)](https://credo-one-1.vercel.app/)
+
 ---
 
 ## 🎯 Project Overview
