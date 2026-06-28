@@ -1,8 +1,3 @@
-import xgboost as xgb
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
-import pandas as pd
 import json
 import aiohttp
 import asyncio
@@ -113,6 +108,10 @@ def train_model(preprocessor, X, y):
     """
     Trains and returns an XGBoost classification model using a stratified split.
     """
+    import xgboost as xgb
+    from sklearn.pipeline import Pipeline
+    from sklearn.model_selection import train_test_split
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
     model_pipeline = Pipeline(steps=[
@@ -131,6 +130,8 @@ def evaluate_model(model, X_test, y_test):
     """
     Evaluates the trained model on test data and prints detailed metrics.
     """
+    from sklearn.metrics import accuracy_score, confusion_matrix
+
     y_pred = model.predict(X_test)
 
     print("\n### Model Evaluation ###")
